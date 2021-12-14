@@ -14,23 +14,6 @@ module.exports.getMyCourse = async (req, res) => {
 		res.status(500).send({ error: "server error" });
 	}
 };
-// module.exports.delCourseController = async (req, res) => {
-// 	try {
-// 		const { teacher_id } = req.body;
-// 		if (!teacher_id) {
-// 			res.status(400).send({ error: "Bad Request" });
-// 		} else {
-// 			const delCourse = await Course.findOneAndDelete({ teacher_id });
-// 			if (!delCourse) {
-// 				res.status(400).send({ error: "Not Delete" });
-// 			} else {
-// 				res.status(200).send({ message: "Course Deleted" });
-// 			}
-// 		}
-// 	} catch (err) {
-// 		res.status(500).send({ error: "server error" });
-// 	}
-// };
 module.exports.addCourse = async (req, res) => {
 	const {
 		teacher_id,
@@ -165,10 +148,6 @@ module.exports.coursesForStudents = async (req, res) => {
 	}
 }
 
-// module.exports.studentAllCourses = async (req, res) => {
-
-// }
-
 module.exports.applyForCourse = async (req, res) => {
 	try {
 		const { course_id, student_id, student_name, courseName } = req.body
@@ -225,36 +204,6 @@ module.exports.getOneCourse = async (req, res) => {
 		console.log(error)
 	}
 }
-// module.exports.delEnrolledCourse = async (req, res) => {
-// 	try {
-// 		const { student_id, course_id } = req.body
-// 		if (!student_id || !course_id) {
-// 			res.status(401).send({ error: "Invalid Credentials..." })
-// 		} else {
-// 			const findCourse = await Course.findOne({ _id: course_id })
-// 			const delStuFromCor = findCourse.students.filter(item => item.id !== student_id)
-// 			const updateCourse = await Course.findByIdAndUpdate({ _id: course_id }, {
-// 				students: delStuFromCor
-// 			})
-// 			const findStudent = await User.findById(student_id)
-// 			const delCorFromStud = findStudent.courses.filter(item => item.id !== course_id)
-// 			const updateStudent = await User.findOneAndUpdate({ _id: student_id }, {
-// 				courses: delCorFromStud
-// 			})
-// 			if (updateCourse && updateStudent) {
-// 				console.log("updateCourse && updateStudent Successfully")
-// 				res.send({ message: "You Left from this course..." })
-// 			} else {
-// 				console.log("Successfull")
-// 				res.status(502).send({ error: "An Error Occured..." })
-// 			}
-// 		}
-
-// 	} catch (error) {
-// 		console.log(error)
-
-// 	}
-// }
 module.exports.getSpecificCourse = async (req, res) => {
 	try {
 		if (!req.body.id) {

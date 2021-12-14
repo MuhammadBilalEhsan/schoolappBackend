@@ -2,20 +2,15 @@ const User = require("./userModel");
 const Conversation = require("../conversation/conversationModel")
 const bcrypt = require("bcryptjs");
 const admin = require("firebase-admin");
-// const jwt = require("jsonwebtoken")
 const serviceAccount = require("../../firebase/serviceAccount")
 const fs = require("fs")
 
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
-	databaseURL: "https://schoolapp-4ee60-default-rtdb.europe-west1.firebasedatabase.app/"
-	// databaseURL: process.env.FIREBASEURL
+	databaseURL: "https:schoolapp-4ee60-default-rtdb.europe-west1.firebasedatabase.app/"
 });
 const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com/");
-// const bucket = admin.storage().bucket(process.env.BUCKET);
-
-// REGISTER USER ROUTE
 module.exports.registerUser = async (req, res) => {
 	try {
 		let { fname, lname, email, password, roll } = req.body;
@@ -52,7 +47,6 @@ module.exports.registerUser = async (req, res) => {
 	}
 };
 
-// EDIT PROFILE ROUTE
 module.exports.EditProfile = async (req, res) => {
 	try {
 		let { id, fname, lname, fatherName, atClass, age, phone } = req.body;
@@ -82,14 +76,12 @@ module.exports.EditProfile = async (req, res) => {
 };
 
 module.exports.EditProfileImage = async (req, res) => {
-	// try {
 	const _id = req.body._id;
 	const dp = req.file;
 	if (!_id || !dp) {
 		res.status(400).send({ error: "Invalid Credentials!" })
 	}
 	bucket.upload(dp.path,
-		// function (err, file, apiResponse) {
 		function (err, file) {
 			if (!err) {
 				file.getSignedUrl({
@@ -98,7 +90,6 @@ module.exports.EditProfileImage = async (req, res) => {
 				}).then(async (urlData, err) => {
 					try {
 						if (!err) {
-							// console.log("public downloadable url: ", urlData[0])
 							const pubURL = urlData[0]
 							const pPic = await User.findByIdAndUpdate(_id, {
 								dp: pubURL
@@ -119,7 +110,6 @@ module.exports.EditProfileImage = async (req, res) => {
 	)
 }
 
-// USER LOGIN ROUTE
 module.exports.loginUser = async (req, res) => {
 	try {
 		let token;
@@ -149,8 +139,6 @@ module.exports.loginUser = async (req, res) => {
 		console.log(err);
 	}
 };
-
-// GETTING ALL DATA ROUTE
 
 module.exports.markAttendance = async (req, res) => {
 	try {
@@ -206,21 +194,6 @@ module.exports.markAttendance = async (req, res) => {
 		console.error(err);
 	}
 };
-// module.exports.profile = async (req, res) => {
-// 	try {
-// 		const _id = "61708a8defe0fc8e555e618e";
-// 		const userData = await User.findOne({ _id }, (err, user) => {
-// 			if (err) {
-// 				console.log(err);
-// 				res.send({ status: false, error: err });
-// 			}
-// 			res.send({ status: true, userDetails: userData });
-// 		});
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
 module.exports.getData = async (req, res) => {
 	const allUsers = await User.find({});
 	res.status(200).send(allUsers);
@@ -332,8 +305,3 @@ module.exports.myAllConversations = async (req, res) => {
 		res.status(450).send({ error })
 	}
 }
-
-// module.exports.logOutController = (req, res) => {
-// 	res.clearCookie('jwtoken')
-// 	res.send("clear")
-// }

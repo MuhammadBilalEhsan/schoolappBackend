@@ -1,5 +1,3 @@
-const User = require("../user/userModel");
-const Course = require("../course/courseModel");
 const Assignment = require("../assignment/assignmentModel");
 const admin = require("firebase-admin");
 const fs = require("fs");
@@ -10,7 +8,6 @@ module.exports.addAssignmentController = async (req, res) => {
     try {
         const { title, courseID, desc } = req.body
         const createdAt = new Date().toString()
-        // const { file } = req.file
         if (!title || !courseID) {
             res.status(400).send({ error: "Invalid Request.." })
         } else {
@@ -27,7 +24,6 @@ module.exports.addAssignmentController = async (req, res) => {
                 }
             } else if (req.file && !desc) {
                 bucket.upload(req.file.path,
-                    // function (err, file, apiResponse) {
                     function (err, file) {
                         if (!err) {
                             file.getSignedUrl({
@@ -36,7 +32,6 @@ module.exports.addAssignmentController = async (req, res) => {
                             }).then(async (urlData, err) => {
                                 try {
                                     if (!err) {
-                                        // console.log("public downloadable url: ", urlData[0])
                                         const pubURL = urlData[0]
 
                                         const assignment = new Assignment({ title, courseID, createdAt, file: pubURL })
@@ -61,7 +56,6 @@ module.exports.addAssignmentController = async (req, res) => {
                 )
             } else if (req.file && desc) {
                 bucket.upload(req.file.path,
-                    // function (err, file, apiResponse) {
                     function (err, file) {
                         if (!err) {
                             file.getSignedUrl({
@@ -70,7 +64,6 @@ module.exports.addAssignmentController = async (req, res) => {
                             }).then(async (urlData, err) => {
                                 try {
                                     if (!err) {
-                                        // console.log("public downloadable url: ", urlData[0])
                                         const pubURL = urlData[0]
 
                                         const assignment = new Assignment({ title, courseID, description: desc, createdAt, file: pubURL })
@@ -104,7 +97,6 @@ module.exports.addAssignmentController = async (req, res) => {
 module.exports.submitAssignmentController = async (req, res) => {
     try {
         const { assignmentID, id, name, time, desc } = req.body
-        // const { file } = req.file
         if (!assignmentID || !id || !name || !time) {
             res.status(400).send({ error: "Invalid Request.." })
         } else {
@@ -127,7 +119,6 @@ module.exports.submitAssignmentController = async (req, res) => {
                         }
                     } else if (req.file && !desc) {
                         bucket.upload(req.file.path,
-                            // function (err, file, apiResponse) {
                             function (err, file) {
                                 if (!err) {
                                     file.getSignedUrl({
@@ -136,7 +127,6 @@ module.exports.submitAssignmentController = async (req, res) => {
                                     }).then(async (urlData, err) => {
                                         try {
                                             if (!err) {
-                                                // console.log("public downloadable url: ", urlData[0])
                                                 const pubURL = urlData[0]
                                                 const assignmentObj = { id, name, file: pubURL, sumitAt: time, marks: 0 }
 
@@ -163,7 +153,6 @@ module.exports.submitAssignmentController = async (req, res) => {
                         )
                     } else if (req.file && desc) {
                         bucket.upload(req.file.path,
-                            // function (err, file, apiResponse) {
                             function (err, file) {
                                 if (!err) {
                                     file.getSignedUrl({
@@ -172,7 +161,6 @@ module.exports.submitAssignmentController = async (req, res) => {
                                     }).then(async (urlData, err) => {
                                         try {
                                             if (!err) {
-                                                // console.log("public downloadable url: ", urlData[0])
                                                 const pubURL = urlData[0]
 
                                                 const assignmentObj = { id, name, file: pubURL, desc, sumitAt: time, marks: 0 }

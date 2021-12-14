@@ -17,12 +17,10 @@ const assignmentSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    // Automatic fillable fields
     createdAt: {
         type: String,
         required: true
     },
-    // Updateable Fields
     submitted: {
         type: Array,
         required: false

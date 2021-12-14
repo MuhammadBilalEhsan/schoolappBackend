@@ -33,7 +33,6 @@ const courseSchema = mongoose.Schema({
 		type: Array,
 		required: true,
 	},
-	// Automatic fillable fields
 
 	dateOfCreation: {
 		type: String,

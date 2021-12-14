@@ -23,14 +23,10 @@ const UserSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	// Automatic fillable fields
-
 	dateOfAddmission: {
 		type: String,
 		required: true,
 	},
-
-	// Other Fields that can be user fill by him self
 
 	fatherName: {
 		type: String,
@@ -73,7 +69,6 @@ UserSchema.pre("save", async function (next) {
 	next();
 });
 
-// // generating jwt
 UserSchema.methods.generateAuthToken = async function () {
 	try {
 		const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY);
