@@ -46,7 +46,9 @@ socket.on('connection', (socket) => {
 	socket.on('changeInAssignment', (assignment) => {
 		socket.broadcast.emit("CHANGE_IN_ASSIGNMENT", assignment)
 	})
-
+	socket.on('changeInConversation', (conversation) => {
+		socket.broadcast.emit("CHANGE_IN_CONVERSATION", conversation)
+	})
 	socket.on("msgSentInStream", (course) => {
 		socket.broadcast.emit("messageAddedStream", course)
 	})
