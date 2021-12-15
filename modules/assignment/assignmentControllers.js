@@ -1,6 +1,6 @@
 const Assignment = require("../assignment/assignmentModel");
 const admin = require("firebase-admin");
-// const fs = require("fs");
+const fs = require("fs");
 
 const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com");
 
@@ -36,7 +36,7 @@ module.exports.addAssignmentController = async (req, res) => {
 
                                         const assignment = new Assignment({ title, courseID, createdAt, file: pubURL })
                                         const saveWithoutDescription = await assignment.save()
-                                        // fs.unlinkSync(req.file.path);
+                                        fs.unlinkSync(req.file.path);
                                         if (saveWithoutDescription) {
                                             const allAssignment = await Assignment.find({ courseID })
                                             if (allAssignment) {
@@ -68,7 +68,7 @@ module.exports.addAssignmentController = async (req, res) => {
 
                                         const assignment = new Assignment({ title, courseID, description: desc, createdAt, file: pubURL })
                                         const saveWithBoth = await assignment.save()
-                                        // fs.unlinkSync(req.file.path);
+                                        fs.unlinkSync(req.file.path);
                                         if (saveWithBoth) {
                                             const allAssignment = await Assignment.find({ courseID })
                                             if (allAssignment) {
@@ -133,7 +133,7 @@ module.exports.submitAssignmentController = async (req, res) => {
                                                 const submitWithoutDesc = await Assignment.findByIdAndUpdate(assignmentID, {
                                                     submitted: [...findAssignment.submitted, assignmentObj]
                                                 })
-                                                // fs.unlinkSync(req.file.path);
+                                                fs.unlinkSync(req.file.path);
                                                 if (submitWithoutDesc) {
                                                     const assignment = await Assignment.findById(assignmentID)
                                                     if (assignment) {
@@ -167,7 +167,7 @@ module.exports.submitAssignmentController = async (req, res) => {
                                                 const submitWithBoth = await Assignment.findByIdAndUpdate(assignmentID, {
                                                     submitted: [...findAssignment.submitted, assignmentObj]
                                                 })
-                                                // fs.unlinkSync(req.file.path);
+                                                fs.unlinkSync(req.file.path);
                                                 if (submitWithBoth) {
                                                     const assignment = await Assignment.findById(assignmentID)
                                                     if (assignment) {
