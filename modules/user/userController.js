@@ -8,9 +8,10 @@ const fs = require("fs")
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
-	databaseURL: "https:schoolapp-4ee60-default-rtdb.europe-west1.firebasedatabase.app/"
+	databaseURL: "https:schoolapp-4ee60-default-rtdb.europe-west1.firebasedatabase.app"
 });
-const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com/");
+const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com");
+
 module.exports.registerUser = async (req, res) => {
 	try {
 		let { fname, lname, email, password, roll } = req.body;
@@ -94,15 +95,16 @@ module.exports.EditProfileImage = async (req, res) => {
 							const pPic = await User.findByIdAndUpdate(_id, {
 								dp: pubURL
 							})
-							fs.unlinkSync(dp.path)
 							if (pPic) {
-								res.send({ message: "Profile Picture will be updated in a few moments.", pPic: pubURL })
+								res.send({ message: "Profile Picture will be update in a few moments.", pPic: pubURL })
+								fs.unlinkSync(dp.path)
 							} else {
 								res.status(512).send({ error: "Profile Picture Not Updated" })
 							}
 						}
 					} catch (error) {
 						console.log(error)
+						res.send({ error })
 					}
 				})
 			}

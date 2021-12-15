@@ -2,7 +2,7 @@ const Assignment = require("../assignment/assignmentModel");
 const admin = require("firebase-admin");
 const fs = require("fs");
 
-const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com/");
+const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com");
 
 module.exports.addAssignmentController = async (req, res) => {
     try {
