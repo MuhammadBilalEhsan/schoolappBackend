@@ -12,12 +12,12 @@ const storage = multer.diskStorage({
 	},
 });
 
-var upload = multer({ storage: storage });
+var upload = multer({ storage: storage }).single("myImg");
 
 user.route("/register").post(userController.registerUser);
 user.route("/login").post(userController.loginUser);
 user.route("/edit-profile").post(userController.EditProfile);
-user.post("/editprofileimg", upload.any(), userController.EditProfileImage);
+user.post("/editprofileimg", upload, userController.EditProfileImage);
 user.route("/getdata").get(userController.getData);
 user.route("/attendance").post(userController.markAttendance);
 user.route("/sendmsg").post(userController.sendMessageController);
