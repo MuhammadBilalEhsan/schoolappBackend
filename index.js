@@ -1,6 +1,5 @@
 const express = require("express");
-const cors = require("cors");
-
+const cors = require("cors")
 const app = express();
 
 const db = require("./database/conn");
@@ -10,16 +9,20 @@ const bodyParser = require("body-parser");
 const course = require("./modules/course/courseRoutes");
 const assignment = require("./modules/assignment/assignmentRoutes");
 
-
 require("dotenv").config();
 const port = process.env.PORT || 4040;
 app.use(cors());
+app.use(cors({ origin: '*', credentials: true }));
+// app.use(cors({ origin: '*', methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'] }));
+// app.all('/*', function (req, res, next) {
+// 	res.header("Access-Control-Allow-Origin", "*");
+// 	res.header("Access-Control-Allow-Headers", "X-Requested-With");
+// 	next();
+// });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 app.use(express.static(__dirname + "./public/"));
-
 app.use("/user", user);
 app.use("/course", course);
 app.use("/assignment", assignment);
@@ -27,8 +30,6 @@ let server = app.listen(port, () => {
 	console.log(`server is working on http://localhost:${port}`);
 	db.dbConnector();
 });
-
-
 
 let socket = require('socket.io')(server);
 socket.on('connection', (socket) => {
@@ -56,4 +57,3 @@ socket.on('connection', (socket) => {
 		socket.broadcast.emit("ASSIGNMENT_ADDED", allAssignment)
 	})
 })
-
