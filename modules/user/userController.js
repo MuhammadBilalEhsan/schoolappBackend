@@ -79,21 +79,17 @@ module.exports.EditProfile = async (req, res) => {
 module.exports.EditProfileImage = async (req, res) => {
 	const _id = req.body._id;
 	const dp = req.file;
-	console.log("req.body", req.body)
-	console.log("req.body", req.file)
 	if (!_id || !dp) {
 		res.status(400).send({ error: "Invalid Credentials!" })
 	} else {
 		bucket.upload(dp.path,
 			function (err, file) {
 				if (!err) {
-					console.log("console1 File", file)
 					file.getSignedUrl({
 						action: 'read',
 						expires: '03-09-2491'
 					}).then(async (urlData, err) => {
 						try {
-							console.log("console2 .then urlData[0]", urlData[0])
 							if (!err) {
 								const pubURL = urlData[0]
 								const pPic = await User.findByIdAndUpdate(_id, {
