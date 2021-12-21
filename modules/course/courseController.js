@@ -376,3 +376,13 @@ module.exports.muteStudentController = async (req, res) => {
 
 	}
 }
+module.exports.getAllCourses = async (req, res) => {
+	try {
+		const allCourses = await Course.find({})
+		if (allCourses) {
+			res.send({ allCourses })
+		}
+	} catch (error) {
+
+	}
+}

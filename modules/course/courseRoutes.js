@@ -14,6 +14,7 @@ course.route("/delspecificstudent").post(courseController.delSpecificStudentByTe
 course.route("/announcement").post(courseController.addAnnouncementController);
 course.route("/delcoursefromstudent").post(courseController.deleteCourseFromStudent);
 course.route("/mutestudent").post(courseController.muteStudentController);
+course.route("/getall").get(courseController.getAllCourses);
 
 
 module.exports = course;

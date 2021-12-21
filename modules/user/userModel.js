@@ -51,6 +51,10 @@ const UserSchema = mongoose.Schema({
 	attendance: [],
 	courses: [],
 	conversations: [],
+	blocked: {
+		type: Boolean,
+		required: true,
+	},
 
 	tokens: [
 		{

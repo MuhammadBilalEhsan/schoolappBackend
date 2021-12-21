@@ -32,13 +32,20 @@ module.exports.registerUser = async (req, res) => {
 				password,
 				roll,
 				dateOfAddmission,
+				blocked: false,
 			});
 
 			const userSave = await user.save();
 			if (userSave) {
-				return res
-					.status(200)
-					.json({ message: "User Registered successfully" });
+				const user = await User.findOne({ email }).exec();
+				if (user) {
+					return res
+						.status(200)
+						.json({
+							message: "User Registered successfully",
+							user
+						});
+				}
 			} else {
 				return res.status(500).json({ message: "User can not registered" });
 			}
