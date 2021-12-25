@@ -130,19 +130,23 @@ module.exports.loginUser = async (req, res) => {
 			const userExist = await User.findOne({ email }).exec();
 			if (userExist) {
 				const isMatch = await bcrypt.compare(password, userExist.password);
-				token = await userExist.generateAuthToken();
-				res.cookie("jwtoken", token, {
-					httpOnly: true,
-				});
+				// console.log("userExist", userExist)
 				if (!isMatch) {
 					return res.status(401).json({ error: "Invalid Credentials" });
 				} else {
-					return res
-						.status(200)
-						.send({ curUser: userExist, message: "User Login successfully" });
+					const isBlocked = userExist.blocked
+					if (isBlocked) {
+						res.send({ error: "You Are Blocked" })
+					} else {
+						token = await userExist.generateAuthToken();
+						res.cookie("jwtoken", token, {
+							httpOnly: true,
+						});
+						res.send({ user: userExist, message: "User Login successfully" });
+					}
 				}
 			} else {
-				return res.status(401).json({ error: "User not exist" });
+				return res.status(404).json({ error: "User not exist" });
 			}
 		}
 	} catch (err) {
@@ -313,5 +317,51 @@ module.exports.myAllConversations = async (req, res) => {
 		}
 	} catch (error) {
 		res.status(450).send({ error })
+	}
+}
+
+module.exports.blockUserController = async (req, res) => {
+	try {
+		const userID = req.params.id
+		if (!userID) {
+			res.status(400).send({ error: "Invalid Credentials..." })
+		} else {
+			// console.log("userID", userID)
+			const findUser = await User.findById(userID)
+			if (findUser) {
+				if (findUser.blocked) {
+					const updateUser = await User.findByIdAndUpdate(userID, {
+						blocked: false
+					})
+					// message = "User Unblocked..."
+					if (updateUser) {
+						const user = await User.findById(userID)
+						if (user) {
+							res.send({ user, message: "User Unblocked" })
+						}
+					} else {
+						res.status(505).send({ error: "Unexpected Error" })
+					}
+				} else {
+					const updateUser = await User.findByIdAndUpdate(userID, {
+						blocked: true
+					})
+					if (updateUser) {
+						const user = await User.findById(userID)
+						if (user) {
+							res.send({ user, message: "User Blocked" })
+						}
+					} else {
+						res.status(505).send({ error: "Unexpected Error" })
+					}
+				}
+			} else {
+				res.status(404).send({ error: "User Not Found..." })
+			}
+		}
+	} catch (error) {
+		console.log(error)
+		// res.status(300).send({ error })
+
 	}
 }

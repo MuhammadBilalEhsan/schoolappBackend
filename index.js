@@ -51,4 +51,8 @@ socket.on('connection', (socket) => {
 	socket.on("assignmentAdd", (allAssignment) => {
 		socket.broadcast.emit("ASSIGNMENT_ADDED", allAssignment)
 	})
+	socket.on("changeInUser", (user) => {
+		socket.broadcast.emit("CHANGE_IN_USER", user)
+		socket.emit("CHANGE_IN_USER", user)
+	})
 })

@@ -22,5 +22,6 @@ user.route("/getdata").get(userController.getData);
 user.route("/attendance").post(userController.markAttendance);
 user.route("/sendmsg").post(userController.sendMessageController);
 user.route("/myallconversations/:id").get(userController.myAllConversations);
+user.route("/block/:id").get(userController.blockUserController);
 
 module.exports = user;
