@@ -17,7 +17,7 @@ module.exports.getMyCourse = async (req, res) => {
 module.exports.addCourse = async (req, res) => {
 	const {
 		teacher_id,
-		teacherEmail,
+		teacherName,
 		teacherClass,
 		courseName,
 		courseDesc,
@@ -29,7 +29,7 @@ module.exports.addCourse = async (req, res) => {
 	try {
 		if (
 			!teacher_id ||
-			!teacherEmail ||
+			!teacherName ||
 			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
@@ -44,7 +44,7 @@ module.exports.addCourse = async (req, res) => {
 			if (!secondCourse) {
 				const course = new Course({
 					teacher_id,
-					teacherEmail,
+					teacherName,
 					teacherClass,
 					courseName,
 					courseDesc,
@@ -74,7 +74,7 @@ module.exports.addCourse = async (req, res) => {
 module.exports.editCourse = async (req, res) => {
 	const {
 		teacher_id,
-		teacherEmail,
+		teacherName,
 		teacherClass,
 		courseName,
 		courseDesc,
@@ -85,7 +85,7 @@ module.exports.editCourse = async (req, res) => {
 	try {
 		if (
 			!teacher_id ||
-			!teacherEmail ||
+			!teacherName ||
 			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
@@ -97,7 +97,7 @@ module.exports.editCourse = async (req, res) => {
 		}
 		const editCourse = await Course.findOneAndUpdate(teacher_id, {
 			teacher_id,
-			teacherEmail,
+			teacherName,
 			teacherClass,
 			courseName,
 			courseDesc,

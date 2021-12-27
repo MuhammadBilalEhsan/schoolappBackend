@@ -5,7 +5,7 @@ const courseSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	teacherEmail: {
+	teacherName: {
 		type: String,
 		required: true,
 	},
