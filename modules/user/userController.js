@@ -132,11 +132,11 @@ module.exports.loginUser = async (req, res) => {
 				const isMatch = await bcrypt.compare(password, userExist.password);
 				// console.log("userExist", userExist)
 				if (!isMatch) {
-					return res.status(401).json({ error: "Invalid Credentials" });
+					return res.send({ error: "Invalid Credentials..." });
 				} else {
 					const isBlocked = userExist.blocked
 					if (isBlocked) {
-						res.send({ error: "You Are Blocked" })
+						res.send({ error: "You Are Blocked..." })
 					} else {
 						token = await userExist.generateAuthToken();
 						res.cookie("jwtoken", token, {
@@ -162,7 +162,18 @@ module.exports.markAttendance = async (req, res) => {
 			return res.status(400).send({ error: "Invalid Request" });
 		}
 		const findUser = await User.findOne({ _id });
-		const mm_yy = `${month}_${year}`;
+		const mm_yy = `${month === 0 ? "jan" :
+			month === 1 ? "feb" :
+				month === 2 ? "mar" :
+					month === 3 ? "apr" :
+						month === 4 ? "may" :
+							month === 5 ? "jun" :
+								month === 6 ? "jul" :
+									month === 7 ? "aug" :
+										month === 8 ? "sep" :
+											month === 9 ? "oct" :
+												month === 10 ? "nov" : "dec"
+			}_${year}`;
 		if (!findUser) {
 			return res.status(404).send({ error: "User not found" });
 		} else {
@@ -362,6 +373,47 @@ module.exports.blockUserController = async (req, res) => {
 	} catch (error) {
 		console.log(error)
 		// res.status(300).send({ error })
+
+	}
+}
+module.exports.addClass = async (req, res) => {
+	try {
+		const { adminID, title } = req.body
+		if (!adminID || !title) {
+			res.status(400).send({ error: "Invalid Request.." })
+		} else {
+			const findAdmin = await User.findById(adminID)
+			if (findAdmin) {
+				var alreadyExist = false;
+				if (findAdmin.classes?.length) {
+					let findClass = findAdmin.classes.find(classTitle => classTitle === title)
+					if (findClass) {
+						alreadyExist = true
+					}
+				}
+				if (alreadyExist) {
+					res.status(400).send({ error: "Class already Exist.." })
+				} else {
+					const addClassInAdminObject = await User.findByIdAndUpdate(adminID, {
+						classes: [...findAdmin.classes, String(title)]
+					})
+					if (addClassInAdminObject) {
+						const user = await User.findById(adminID)
+						if (user) {
+							res.send({ message: "Class Added..", user })
+						}
+					} else {
+						res.status(505).send({ error: "Unfortunatily Class not added.." })
+					}
+
+				}
+				// find()
+			} else {
+				res.status(404).send({ error: "Admin Not Found.." })
+			}
+		}
+	} catch (error) {
+		res.send({ error })
 
 	}
 }
