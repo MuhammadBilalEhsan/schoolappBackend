@@ -34,7 +34,7 @@ const UserSchema = mongoose.Schema({
 	},
 	atClass: {
 		type: String,
-		required: false,
+		required: true,
 	},
 	age: {
 		type: Number,

@@ -14,16 +14,16 @@ const bucket = admin.storage().bucket("gs://schoolapp-4ee60.appspot.com/");
 
 module.exports.registerUser = async (req, res) => {
 	try {
-		let { fname, lname, email, password, roll } = req.body;
+		let { fname, lname, email, password, roll, atClass } = req.body;
 		let dateOfAddmission = new Date().toString();
-		if (!fname || !lname || !email || !password || !roll || !dateOfAddmission) {
+		if (!fname || !lname || !email || !password || !roll || !atClass || !dateOfAddmission) {
 			res
 				.status(422)
 				.json({ error: "You Should fill all fields properly..!" });
 		}
 		const usertExist = await User.findOne({ email }).exec();
 		if (usertExist) {
-			return res.status(422).json({ error: "User already exists" });
+			return res.send({ error: "User already exists" });
 		} else {
 			const user = new User({
 				fname,
@@ -31,6 +31,7 @@ module.exports.registerUser = async (req, res) => {
 				email,
 				password,
 				roll,
+				atClass,
 				dateOfAddmission,
 				blocked: false,
 			});
@@ -39,15 +40,13 @@ module.exports.registerUser = async (req, res) => {
 			if (userSave) {
 				const user = await User.findOne({ email }).exec();
 				if (user) {
-					return res
-						.status(200)
-						.json({
-							message: "User Registered successfully",
-							user
-						});
+					return res.send({
+						message: "User Registered successfully",
+						user
+					});
 				}
 			} else {
-				return res.status(500).json({ message: "User can not registered" });
+				return res.status(500).json({ error: "User can not registered." });
 			}
 		}
 	} catch (err) {
