@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors")
 const app = express();
 
+const auth = require("./modules/auth/auth")
 const db = require("./database/conn");
 const user = require("./modules/user/userRoutes");
 const bodyParser = require("body-parser");
@@ -18,6 +19,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(express.static(__dirname + "./public/"));
+
+app.use("/", auth)
+
 app.use("/user", user);
 app.use("/course", course);
 app.use("/assignment", assignment);
