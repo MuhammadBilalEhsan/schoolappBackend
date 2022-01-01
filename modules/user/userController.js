@@ -53,7 +53,18 @@ module.exports.registerUser = async (req, res) => {
 		console.log(err);
 	}
 };
-
+module.exports.getCurrentUser = async (req, res) => {
+	try {
+		const user = await User.findById(req.body.schoolCookie.id)
+		if (user) {
+			res.send({ message: "user object sent..", user })
+		} else {
+			res.status(404).send({ error: "User not found.." })
+		}
+	} catch (error) {
+		res.status(500).send({ error: "Unexpected Error.." })
+	}
+}
 module.exports.EditProfile = async (req, res) => {
 	try {
 		let { id, fname, lname, fatherName, atClass, age, phone } = req.body;
@@ -119,39 +130,6 @@ module.exports.EditProfileImage = async (req, res) => {
 	}
 }
 
-module.exports.loginUser = async (req, res) => {
-	try {
-		let token;
-		let { email, password } = req.body;
-		if (!email || !password) {
-			return res.status(400).json({ error: "Please fill all fields properly" });
-		} else {
-			const userExist = await User.findOne({ email }).exec();
-			if (userExist) {
-				const isMatch = await bcrypt.compare(password, userExist.password);
-				// console.log("userExist", userExist)
-				if (!isMatch) {
-					return res.send({ error: "Invalid Credentials..." });
-				} else {
-					const isBlocked = userExist.blocked
-					if (isBlocked) {
-						res.send({ error: "You Are Blocked..." })
-					} else {
-						token = await userExist.generateAuthToken();
-						res.cookie("jwtoken", token, {
-							httpOnly: true,
-						});
-						res.send({ user: userExist, message: "User Login successfully" });
-					}
-				}
-			} else {
-				return res.status(404).json({ error: "User not exist" });
-			}
-		}
-	} catch (err) {
-		console.log(err);
-	}
-};
 
 module.exports.markAttendance = async (req, res) => {
 	try {
@@ -219,8 +197,15 @@ module.exports.markAttendance = async (req, res) => {
 	}
 };
 module.exports.getData = async (req, res) => {
-	const allUsers = await User.find({});
-	res.status(200).send(allUsers);
+	try {
+		const users = await User.find({});
+		if (users) {
+			res.send({ users });
+		}
+
+	} catch (error) {
+		res.status(500).send({ error: "Unexpected Error" })
+	}
 };
 
 module.exports.sendMessageController = async (req, res) => {
@@ -415,4 +400,8 @@ module.exports.addClass = async (req, res) => {
 		res.send({ error })
 
 	}
+}
+module.exports.logOutController = (req, res) => {
+	res.clearCookie('schoolCookie')
+	res.send({ message: "User logout" })
 }

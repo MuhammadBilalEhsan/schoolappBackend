@@ -1,19 +1,24 @@
 const express = require("express");
 const cors = require("cors")
 const app = express();
+const jwt = require("jsonwebtoken")
+const cookieParser = require('cookie-parser')
 
 const auth = require("./modules/auth/auth")
 const db = require("./database/conn");
 const user = require("./modules/user/userRoutes");
 const bodyParser = require("body-parser");
+app.use(cookieParser());
 
 const course = require("./modules/course/courseRoutes");
 const assignment = require("./modules/assignment/assignmentRoutes");
 
 require("dotenv").config();
 const port = process.env.PORT || 4040;
-// app.use(cors());
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({
+	origin: ["http://localhost:3000", "https://school1.surge.sh"],
+	credentials: true,
+}));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -21,6 +26,43 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + "./public/"));
 
 app.use("/", auth)
+
+
+app.use((req, res, next) => {
+	if (!req.cookies.schoolCookie) {
+		res.status(401).send({ error: "include http-only credentials with every request" })
+		return;
+	}
+	jwt.verify(req.cookies.schoolCookie, process.env.SECRET_KEY, function (err, decodedData) {
+		if (!err) {
+			const issueDate = decodedData.iat * 1000;
+			const nowDate = new Date().getTime();
+			const diff = nowDate - issueDate;
+			if (diff > 300000) {
+				res.status(401).send({ error: "token expired" })
+			} else {
+				const MAX_AGE_OF_TOKEN = 86400000
+				var token = jwt.sign({
+					id: decodedData.id,
+					fname: decodedData.lname,
+					lname: decodedData.lname,
+					email: decodedData.email,
+					roll: decodedData.roll,
+				}, process.env.SECRET_KEY)
+				res.cookie('schoolCookie', token, {
+					maxAge: MAX_AGE_OF_TOKEN,
+					httpOnly: true
+				});
+				req.body.schoolCookie = decodedData
+				req.headers.schoolCookie = decodedData
+				next();
+			}
+		} else {
+			res.status(401).send({ error: "invalid token" })
+		}
+	});
+})
+
 
 app.use("/user", user);
 app.use("/course", course);
@@ -56,7 +98,7 @@ socket.on('connection', (socket) => {
 		socket.broadcast.emit("ASSIGNMENT_ADDED", allAssignment)
 	})
 	socket.on("newUserAdded", (user) => {
-		socket.broadcast.emit("NEW_USER_ADDED", user)
+		// socket.broadcast.emit("NEW_USER_ADDED", user)
 		socket.emit("NEW_USER_ADDED", user)
 	})
 	socket.on("changeInUser", (user) => {

@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../user/userModel");
 const auth = express.Router();
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 auth.post("/login", async (req, res) => {
     try {
@@ -19,6 +20,20 @@ auth.post("/login", async (req, res) => {
                     if (isBlocked) {
                         res.status(403).send({ error: "You Are Blocked.." })
                     } else {
+                        var token =
+                            jwt.sign({
+                                id: userExist._id,
+                                fname: userExist.lname,
+                                lname: userExist.lname,
+                                email: userExist.email,
+                                roll: userExist.roll,
+                            }, process.env.SECRET_KEY)
+
+                        res.cookie('schoolCookie', token, {
+                            maxAge: 8640000000000,
+                            httpOnly: true
+                        });
+
                         res.send({ user: userExist, message: "User Login successfully" });
                     }
                 }
@@ -27,7 +42,7 @@ auth.post("/login", async (req, res) => {
             }
         }
     } catch (err) {
-        res.status(500).send({ error: err })
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 })
 
