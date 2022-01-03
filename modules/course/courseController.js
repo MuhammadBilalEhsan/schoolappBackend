@@ -114,37 +114,33 @@ module.exports.editCourse = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error);
+		// console.log(error);
 		res.status(400).send({ error: "Unexpected error..." });
 	}
 };
 module.exports.coursesForStudents = async (req, res) => {
 	try {
-		const { studentID } = req.body
-		const studentClass = Number(req.body.studentClass)
-		if (!studentClass) {
-			res.status(400).send({ error: "Students Class ??" })
-		} else {
-			const allAvailales = await Course.find({ teacherClass: studentClass })
-			const filtered = allAvailales.filter(currentCourse => {
-				if (currentCourse.students.length) {
-					const abc = currentCourse.students.find((student) => student.id === studentID)
-					if (!abc) {
-						return currentCourse
-					}
-				} else {
+		const { id, atClass } = req.body.schoolCookie
+		const allAvailales = await Course.find({ teacherClass: atClass })
+
+		const filtered = allAvailales.filter(currentCourse => {
+			if (currentCourse.students.length) {
+				const abc = currentCourse.students.find((student) => student.id === id)
+				if (!abc) {
 					return currentCourse
 				}
-			})
-			if (!filtered) {
-				res.status(200).send({ message: `No Courses Available for class ${studentClass}` })
 			} else {
-				res.status(200).send({ courses: filtered, message: `These Courses are Available for class ${studentClass}` })
+				return currentCourse
 			}
+		})
+		if (!filtered) {
+			res.status(200).send({ message: `No Courses Available for class ${atClass}` })
+		} else {
+			res.status(200).send({ courses: filtered, message: `These Courses are Available for class ${atClass}` })
 		}
 
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Some error..." });
 	}
 }
 

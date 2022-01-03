@@ -27,6 +27,7 @@ auth.post("/login", async (req, res) => {
                                 lname: userExist.lname,
                                 email: userExist.email,
                                 roll: userExist.roll,
+                                atClass: userExist.atClass,
                             }, process.env.SECRET_KEY)
 
                         res.cookie('schoolCookie', token, {

@@ -48,6 +48,7 @@ app.use((req, res, next) => {
 					lname: decodedData.lname,
 					email: decodedData.email,
 					roll: decodedData.roll,
+					atClass: decodedData.atClass,
 				}, process.env.SECRET_KEY)
 				res.cookie('schoolCookie', token, {
 					maxAge: MAX_AGE_OF_TOKEN,
