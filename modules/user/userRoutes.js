@@ -24,6 +24,7 @@ user.route("/sendmsg").post(userController.sendMessageController);
 user.route("/myallconversations/:id").get(userController.myAllConversations);
 user.route("/block/:id").get(userController.blockUserController);
 user.route("/addclass").post(userController.addClass);
+user.route("/changepassword").post(userController.changePassword);
 user.route("/logout").get(userController.logOutController);
 
 module.exports = user;

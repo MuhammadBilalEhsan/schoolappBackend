@@ -47,8 +47,7 @@ module.exports.addAssignmentController = async (req, res) => {
                                         }
                                     }
                                 } catch (error) {
-                                    res.status(505).send({ error })
-                                    console.log(error)
+                                    res.status(500).send({ error: "Unexpected Error.." })
                                 }
                             })
                         }
@@ -79,8 +78,7 @@ module.exports.addAssignmentController = async (req, res) => {
                                         }
                                     }
                                 } catch (error) {
-                                    res.status(505).send({ error })
-                                    console.log(error)
+                                    res.status(500).send({ error: "Unexpected Error.." })
                                 }
                             })
                         }
@@ -90,8 +88,7 @@ module.exports.addAssignmentController = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
-
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 }
 module.exports.submitAssignmentController = async (req, res) => {
@@ -144,8 +141,7 @@ module.exports.submitAssignmentController = async (req, res) => {
                                                 }
                                             }
                                         } catch (error) {
-                                            res.status(505).send({ error })
-                                            console.log(error)
+                                            res.status(500).send({ error: "Unexpected Error.." })
                                         }
                                     })
                                 }
@@ -178,8 +174,7 @@ module.exports.submitAssignmentController = async (req, res) => {
                                                 }
                                             }
                                         } catch (error) {
-                                            res.status(505).send({ error })
-                                            console.log(error)
+                                            res.status(500).send({ error: "Unexpected Error.." })
                                         }
                                     })
                                 }
@@ -196,8 +191,7 @@ module.exports.submitAssignmentController = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
-
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 
 }
@@ -215,8 +209,7 @@ module.exports.getAllAssignments = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(300).send({ error })
-        console.log(error)
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 }
 module.exports.getSubmittedStudents = async (req, res) => {
@@ -233,7 +226,7 @@ module.exports.getSubmittedStudents = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(450).send({ error })
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 }
 module.exports.giveMarksController = async (req, res) => {
@@ -263,7 +256,7 @@ module.exports.giveMarksController = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(450).send({ error })
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 }
 module.exports.allCheckedAssignmentsOfStudent = async (req, res) => {
@@ -291,6 +284,6 @@ module.exports.allCheckedAssignmentsOfStudent = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(450).send({ error })
+        res.status(500).send({ error: "Unexpected Error.." })
     }
 }

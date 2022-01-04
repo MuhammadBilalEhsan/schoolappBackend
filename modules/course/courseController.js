@@ -15,22 +15,20 @@ module.exports.getMyCourse = async (req, res) => {
 	}
 };
 module.exports.addCourse = async (req, res) => {
-	const {
-		teacher_id,
-		teacherName,
-		teacherClass,
-		courseName,
-		courseDesc,
-		topics,
-		duration,
-		courseOutline,
-	} = req.body;
-	const dateOfCreation = new Date().toString();
 	try {
+		const {
+			courseName,
+			courseDesc,
+			topics,
+			duration,
+			courseOutline,
+		} = req.body;
+		const { id: teacher_id, fname, lname, atClass: teacherClass } = req.body.schoolCookie
+		const teacherName = `${fname} ${lname}`
+
+		const dateOfCreation = new Date().toString();
+
 		if (
-			!teacher_id ||
-			!teacherName ||
-			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
 			!topics ||
@@ -38,7 +36,7 @@ module.exports.addCourse = async (req, res) => {
 			!courseOutline ||
 			!dateOfCreation
 		) {
-			res.status(400).send({ error: "You Should fill all fields properly..!" });
+			res.status(400).send({ error: "Please fill all fields properly..!" });
 		} else {
 			const secondCourse = await Course.findOne({ teacher_id });
 			if (!secondCourse) {
@@ -67,8 +65,7 @@ module.exports.addCourse = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error);
-		res.status(400).send({ error: "Unexpected error..." });
+		res.status(500).send({ error: "Unexpected error..." });
 	}
 };
 module.exports.editCourse = async (req, res) => {
@@ -114,8 +111,7 @@ module.exports.editCourse = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		// console.log(error);
-		res.status(400).send({ error: "Unexpected error..." });
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 };
 module.exports.coursesForStudents = async (req, res) => {
@@ -134,13 +130,13 @@ module.exports.coursesForStudents = async (req, res) => {
 			}
 		})
 		if (!filtered) {
-			res.status(200).send({ message: `No Courses Available for class ${atClass}` })
+			res.status(200).send({ message: `No Courses Available for class $ { atClass }` })
 		} else {
-			res.status(200).send({ courses: filtered, message: `These Courses are Available for class ${atClass}` })
+			res.status(200).send({ courses: filtered, message: `These Courses are Available for class $ { atClass }` })
 		}
 
 	} catch (error) {
-		res.status(500).send({ error: "Some error..." });
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 
@@ -179,7 +175,7 @@ module.exports.applyForCourse = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.getOneCourse = async (req, res) => {
@@ -197,7 +193,7 @@ module.exports.getOneCourse = async (req, res) => {
 		}
 
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.getSpecificCourse = async (req, res) => {
@@ -213,7 +209,7 @@ module.exports.getSpecificCourse = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.sendMessageController = async (req, res) => {
@@ -240,7 +236,7 @@ module.exports.sendMessageController = async (req, res) => {
 			}
 		}
 	} catch (err) {
-		console.log(err)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.addAnnouncementController = async (req, res) => {
@@ -267,7 +263,7 @@ module.exports.addAnnouncementController = async (req, res) => {
 			}
 		}
 	} catch (err) {
-		console.log(err)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.delSpecificStudentByTeacher = async (req, res) => {
@@ -304,7 +300,7 @@ module.exports.delSpecificStudentByTeacher = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.deleteCourseFromStudent = async (req, res) => {
@@ -367,9 +363,7 @@ module.exports.muteStudentController = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
-		res.status(300).send({ error })
-
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.getAllCourses = async (req, res) => {
@@ -379,6 +373,6 @@ module.exports.getAllCourses = async (req, res) => {
 			res.send({ allCourses })
 		}
 	} catch (error) {
-
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }

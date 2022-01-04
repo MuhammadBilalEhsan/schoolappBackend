@@ -26,11 +26,11 @@ const courseSchema = mongoose.Schema({
 		required: true,
 	},
 	duration: {
-		type: Number,
+		type: String,
 		required: true,
 	},
 	courseOutline: {
-		type: Array,
+		type: String,
 		required: true,
 	},
 

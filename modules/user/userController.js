@@ -50,7 +50,7 @@ module.exports.registerUser = async (req, res) => {
 			}
 		}
 	} catch (err) {
-		console.log(err);
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 };
 module.exports.getCurrentUser = async (req, res) => {
@@ -67,20 +67,19 @@ module.exports.getCurrentUser = async (req, res) => {
 }
 module.exports.EditProfile = async (req, res) => {
 	try {
-		let { id, fname, lname, fatherName, atClass, age, phone } = req.body;
+		let { fname, lname, fatherName, age, phone } = req.body;
+		const id = req.body.schoolCookie.id
 
-		if (!id || !fname || !lname || !fatherName || !atClass || !age || !phone) {
+		if (!fname || !lname || !fatherName || !age || !phone) {
 			return res.status(422).json({ error: "please fill all fields properly" });
 		} else {
 			const userUpdate = await User.findByIdAndUpdate(id, {
 				fname,
 				lname,
 				fatherName,
-				atClass,
 				age,
 				phone,
 			});
-
 			if (userUpdate) {
 				const updated = await User.findById(id)
 				res.status(200).send({ message: "User Update Successfully", updated });
@@ -89,7 +88,7 @@ module.exports.EditProfile = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error);
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 };
 
@@ -120,8 +119,7 @@ module.exports.EditProfileImage = async (req, res) => {
 								}
 							}
 						} catch (error) {
-							console.log(error)
-							res.send({ error })
+							res.status(500).send({ error: "Internal Server Error.." })
 						}
 					})
 				}
@@ -133,69 +131,82 @@ module.exports.EditProfileImage = async (req, res) => {
 
 module.exports.markAttendance = async (req, res) => {
 	try {
-		const attObj = req.body;
-		const { _id, year, month, date, time } = attObj;
-		if (!_id || !year || !month || !date || !time) {
+		const { year, month, date, time } = req.body;
+		let _id = req.body.schoolCookie.id
+		if (!year || !month || !date || !time) {
 			return res.status(400).send({ error: "Invalid Request" });
-		}
-		const findUser = await User.findOne({ _id });
-		const mm_yy = `${month === 0 ? "jan" :
-			month === 1 ? "feb" :
-				month === 2 ? "mar" :
-					month === 3 ? "apr" :
-						month === 4 ? "may" :
-							month === 5 ? "jun" :
-								month === 6 ? "jul" :
-									month === 7 ? "aug" :
-										month === 8 ? "sep" :
-											month === 9 ? "oct" :
-												month === 10 ? "nov" : "dec"
-			}_${year}`;
-		if (!findUser) {
-			return res.status(404).send({ error: "User not found" });
 		} else {
-			const getMonth = findUser.attendance.find(
-				(cur) => cur.monthName === mm_yy,
-			);
-			if (!getMonth) {
-				const markAttWithNewMonth = await User.findByIdAndUpdate(_id, {
-					attendance: [
-						...findUser.attendance,
-						{ monthName: mm_yy, days: [{ todayDate: date, time }] },
-					],
-				});
-				if (!markAttWithNewMonth) {
-					return res
-						.status(500)
-						.send({ error: "Mark Attendance with new Month failed!" });
-				}
+			const findUser = await User.findOne({ _id });
+			const mm_yy = `${month === "0" ? "jan" :
+				month === "1" ? "feb" : month === "2" ? "mar" : month === "3" ? "apr" :
+					month === "4" ? "may" : month === "5" ? "jun" : month === "6" ? "jul" :
+						month === "7" ? "aug" : month === "8" ? "sep" : month === "9" ? "oct" :
+							month === "10" ? "nov" : "dec"
+				}_${year}`;
+			if (!findUser) {
+				return res.status(404).send({ error: "User not found" });
 			} else {
-				const getMonthIndexNo = findUser.attendance.findIndex(
+				const getMonth = findUser.attendance.find(
 					(cur) => cur.monthName === mm_yy,
 				);
-				const newAtt = [...findUser.attendance];
-				newAtt[`${getMonthIndexNo}`].days.push({
-					todayDate: date,
-					time,
-				});
-				const markAttWithExistMonth = await User.findByIdAndUpdate(_id, {
-					attendance: newAtt,
-				});
-				if (!markAttWithExistMonth) {
+				if (!getMonth) {
+					const markAttWithNewMonth = await User.findByIdAndUpdate(_id, {
+						attendance: [
+							...findUser.attendance,
+							{ monthName: mm_yy, days: [{ todayDate: date, time }] },
+						],
+					});
+					if (!markAttWithNewMonth) {
+						return res
+							.status(500)
+							.send({ error: "Mark Attendance with new Month failed!" });
+					}
+				} else {
+					const getMonthIndexNo = findUser.attendance.findIndex(
+						(cur) => cur.monthName === mm_yy,
+					);
+					const newAtt = [...findUser.attendance];
+					newAtt[`${getMonthIndexNo}`].days.push({
+						todayDate: date,
+						time,
+					});
+					const markAttWithExistMonth = await User.findByIdAndUpdate(_id, {
+						attendance: newAtt,
+					});
+					if (!markAttWithExistMonth) {
+						return res
+							.status(500)
+							.send({ error: "Mark Attendance with Existing Month failed!" });
+					}
+				}
+				const updated = await User.findById(_id)
+				if (updated) {
 					return res
-						.status(500)
-						.send({ error: "Mark Attendance with Existing Month failed!" });
+						.status(200)
+						.send({ message: "Today's attendance have been marked.", updated });
 				}
 			}
-			const updated = await User.findById(_id)
-			return res
-				.status(200)
-				.send({ message: "Todays attendance have been marked.", updated });
 		}
 	} catch (err) {
-		console.error(err);
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 };
+
+// module.exports.markAttendance = async (req, res) => {
+// 	try {
+// 		const id = req.body.schoolCookie.id
+// 		const { year, month, date, time } = req.body;
+// 		console.log("id", id)
+// 		console.log("year", year)
+// 		console.log("month", month)
+// 		console.log("date", date)
+// 		console.log("time", time)
+// 	} catch (error) {
+// 		res.status(500).send({ error: "Internal Server.. Messagge.." })
+// 	}
+// }
+
+
 module.exports.getData = async (req, res) => {
 	try {
 		const users = await User.find({});
@@ -297,7 +308,7 @@ module.exports.sendMessageController = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 
@@ -311,7 +322,7 @@ module.exports.myAllConversations = async (req, res) => {
 			res.send({ allConversations })
 		}
 	} catch (error) {
-		res.status(450).send({ error })
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 
@@ -321,7 +332,6 @@ module.exports.blockUserController = async (req, res) => {
 		if (!userID) {
 			res.status(400).send({ error: "Invalid Credentials..." })
 		} else {
-			// console.log("userID", userID)
 			const findUser = await User.findById(userID)
 			if (findUser) {
 				if (findUser.blocked) {
@@ -355,9 +365,7 @@ module.exports.blockUserController = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		console.log(error)
-		// res.status(300).send({ error })
-
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
 module.exports.addClass = async (req, res) => {
@@ -397,10 +405,37 @@ module.exports.addClass = async (req, res) => {
 			}
 		}
 	} catch (error) {
-		res.send({ error })
-
+		res.status(500).send({ error: "Internal Server Error.." })
 	}
 }
+
+module.exports.changePassword = async (req, res) => {
+	try {
+		const id = req.body.schoolCookie.id
+		const { oldPassword, newPassword, confirmPassword } = req.body
+		const user = await User.findById(id)
+		const isMatch = await bcrypt.compare(oldPassword, user.password)
+		if (!isMatch) {
+			res.status(400).send({ error: "Incorrect Old Password." })
+		} else {
+			if (newPassword !== confirmPassword) {
+				res.status(400).send({ error: "Passwords not matching." })
+			} else {
+				const password = await bcrypt.hash(newPassword, 12);
+				if (password) {
+					const changePassword = await User.findByIdAndUpdate(id, { password: password })
+					if (changePassword) {
+						res.send({ message: "Password Changed Successfully.." })
+					}
+				}
+			}
+		}
+	} catch (error) {
+		res.status(500).send({ error: "Some Error in Change Password.." })
+	}
+}
+
+
 module.exports.logOutController = (req, res) => {
 	res.clearCookie('schoolCookie')
 	res.send({ message: "User logout" })
