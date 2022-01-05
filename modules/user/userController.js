@@ -33,6 +33,7 @@ module.exports.registerUser = async (req, res) => {
 				roll,
 				atClass,
 				dateOfAddmission,
+				isAdmin: false,
 				blocked: false,
 			});
 
@@ -191,21 +192,6 @@ module.exports.markAttendance = async (req, res) => {
 		res.status(500).send({ error: "Internal Server Error.." })
 	}
 };
-
-// module.exports.markAttendance = async (req, res) => {
-// 	try {
-// 		const id = req.body.schoolCookie.id
-// 		const { year, month, date, time } = req.body;
-// 		console.log("id", id)
-// 		console.log("year", year)
-// 		console.log("month", month)
-// 		console.log("date", date)
-// 		console.log("time", time)
-// 	} catch (error) {
-// 		res.status(500).send({ error: "Internal Server.. Messagge.." })
-// 	}
-// }
-
 
 module.exports.getData = async (req, res) => {
 	try {
@@ -370,18 +356,26 @@ module.exports.blockUserController = async (req, res) => {
 }
 module.exports.addClass = async (req, res) => {
 	try {
-		const { adminID, title } = req.body
-		if (!adminID || !title) {
+		const { title } = req.body
+		const adminID = req.body.schoolCookie.id
+		// console.log("adminID", adminID)
+		// console.log("title", title)
+		if (!title) {
 			res.status(400).send({ error: "Invalid Request.." })
 		} else {
 			const findAdmin = await User.findById(adminID)
-			if (findAdmin) {
-				var alreadyExist = false;
-				if (findAdmin.classes?.length) {
+			if (findAdmin.isAdmin) {
+				// console.log("findAdmin", findAdmin)
+				var alreadyExist;
+				if (findAdmin.classes?.length > 0) {
 					let findClass = findAdmin.classes.find(classTitle => classTitle === title)
 					if (findClass) {
 						alreadyExist = true
+					} else {
+						alreadyExist = false
 					}
+				} else {
+					alreadyExist = false
 				}
 				if (alreadyExist) {
 					res.status(400).send({ error: "Class already Exist.." })
@@ -399,7 +393,6 @@ module.exports.addClass = async (req, res) => {
 					}
 
 				}
-				// find()
 			} else {
 				res.status(404).send({ error: "Admin Not Found.." })
 			}

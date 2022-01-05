@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 			const issueDate = decodedData.iat * 1000;
 			const nowDate = new Date().getTime();
 			const diff = nowDate - issueDate;
-			if (diff > 300000) {
+			if (diff > 1800000) {
 				res.status(401).send({ error: "token expired" })
 			} else {
 				const MAX_AGE_OF_TOKEN = 86400000
@@ -99,11 +99,11 @@ socket.on('connection', (socket) => {
 		socket.broadcast.emit("ASSIGNMENT_ADDED", allAssignment)
 	})
 	socket.on("newUserAdded", (user) => {
-		// socket.broadcast.emit("NEW_USER_ADDED", user)
+		socket.broadcast.emit("NEW_USER_ADDED", user)
 		socket.emit("NEW_USER_ADDED", user)
 	})
 	socket.on("changeInUser", (user) => {
-		// socket.broadcast.emit("CHANGE_IN_USER", user)
+		socket.broadcast.emit("CHANGE_IN_USER", user)
 		socket.emit("CHANGE_IN_USER", user)
 	})
 })

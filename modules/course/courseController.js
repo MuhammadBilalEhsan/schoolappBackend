@@ -69,21 +69,17 @@ module.exports.addCourse = async (req, res) => {
 	}
 };
 module.exports.editCourse = async (req, res) => {
-	const {
-		teacher_id,
-		teacherName,
-		teacherClass,
-		courseName,
-		courseDesc,
-		topics,
-		duration,
-		courseOutline,
-	} = req.body;
 	try {
+		const {
+			courseName,
+			courseDesc,
+			topics,
+			duration,
+			courseOutline,
+		} = req.body;
+		const { id: teacher_id, fname, lname, atClass: teacherClass } = req.body.schoolCookie
+		const teacherName = `${fname} ${lname}`
 		if (
-			!teacher_id ||
-			!teacherName ||
-			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
 			!topics ||
@@ -91,23 +87,22 @@ module.exports.editCourse = async (req, res) => {
 			!courseOutline
 		) {
 			res.status(400).send({ error: "You Should fill all fields properly..!" });
-		}
-		const editCourse = await Course.findOneAndUpdate(teacher_id, {
-			teacher_id,
-			teacherName,
-			teacherClass,
-			courseName,
-			courseDesc,
-			topics,
-			duration,
-			courseOutline
-		});
-		if (!editCourse) {
-			return res.status(512).send({ error: "Course not Updating" })
 		} else {
-			const editted = await Course.findOne({ teacher_id });
-			if (editted) {
-				res.status(200).send({ message: "Successfully Course Updated", editted })
+			const editCourse = await Course.findOneAndUpdate(teacher_id, {
+				teacherName,
+				courseName,
+				courseDesc,
+				topics,
+				duration,
+				courseOutline
+			});
+			if (!editCourse) {
+				return res.status(512).send({ error: "Course not Updating" })
+			} else {
+				const editted = await Course.findOne({ teacher_id });
+				if (editted) {
+					res.send({ message: "Successfully Course Updated", editted })
+				}
 			}
 		}
 	} catch (error) {

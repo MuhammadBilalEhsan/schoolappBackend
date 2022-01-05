@@ -47,10 +47,14 @@ const UserSchema = mongoose.Schema({
 		type: String,
 		required: false,
 	},
-	// classes: [],
+	classes: [],
 	attendance: [],
 	courses: [],
 	conversations: [],
+	isAdmin: {
+		type: Boolean,
+		required: true,
+	},
 	blocked: {
 		type: Boolean,
 		required: true,
