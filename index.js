@@ -16,7 +16,8 @@ const assignment = require("./modules/assignment/assignmentRoutes");
 require("dotenv").config();
 const port = process.env.PORT || 4040;
 app.use(cors({
-	origin: "https://school1.surge.sh",
+	// origin: "https://school1.surge.sh",
+	origin: ["http://localhost:3000", "https://school1.surge.sh", "https://warm-hollows-02372.herokuapp.com"],
 	// origin: ["http://localhost:3000", "https://school1.surge.sh"],
 	credentials: true,
 }));
