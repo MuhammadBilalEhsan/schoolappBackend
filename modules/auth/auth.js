@@ -35,7 +35,8 @@ auth.post("/login", async (req, res) => {
                             maxAge: 8640000000000,
                             httpOnly: true,
                             // secure: true,
-                            sameSite: 'none',
+                            // sameSite: 'none',
+                            sameSite: false
                             // domain: '.surge.sh'
                         });
 
