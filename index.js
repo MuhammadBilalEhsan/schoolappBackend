@@ -18,10 +18,11 @@ const assignment = require("./modules/assignment/assignmentRoutes");
 require("dotenv").config();
 const port = process.env.PORT || 4040;
 app.use(cors({
-	origin: ["http://localhost:3000", "https://school1.surge.sh", "https://warm-hollows-02372.herokuapp.com"],
-	"Access-Control-Allow-Origin": ["http://localhost:3000", "https://school1.surge.sh", "https://warm-hollows-02372.herokuapp.com"],
+	origin: true,
+	// "Access-Control-Allow-Origin": '*',
 	credentials: true,
-}));
+}
+));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -78,7 +79,13 @@ let server = app.listen(port, () => {
 	db.dbConnector();
 });
 
-let socket = require('socket.io')(server);
+let socket = require('socket.io')(server, {
+	cors: {
+		origin: ['http://localhost:3000', 'https://warm-hollows-02372.herovkuapp.com', "https://school1.surge.sh"],
+		methods: ["GET", "POST"],
+		credentials: true
+	}
+});
 socket.on('connection', (socket) => {
 
 	socket.on('newCoursesAdded', (newCourse) => {
