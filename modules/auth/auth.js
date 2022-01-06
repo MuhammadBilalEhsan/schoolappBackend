@@ -30,14 +30,13 @@ auth.post("/login", async (req, res) => {
                                 atClass: userExist.atClass,
                             }, process.env.SECRET_KEY)
 
-                        res.cookie('schoolCookie', token, {
+                        res.cookie('schoolCookie', JSON.stringify(token), {
                             // maxAge: 3600000*5,
                             maxAge: 8640000000000,
                             httpOnly: true,
-                            // secure: true,
-                            // sameSite: 'none',
-                            sameSite: false
-                            // domain: '.surge.sh'
+                            secure: true,
+                            sameSite: 'none',
+                            domain: '.surge.sh'
                         });
 
                         res.send({ user: userExist, message: "User Login successfully" });

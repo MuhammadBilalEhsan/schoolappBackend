@@ -54,12 +54,12 @@ app.use((req, res, next) => {
 					roll: decodedData.roll,
 					atClass: decodedData.atClass,
 				}, process.env.SECRET_KEY)
-				res.cookie('schoolCookie', token, {
+				res.cookie('schoolCookie', JSON.stringify(token), {
 					maxAge: MAX_AGE_OF_TOKEN,
 					httpOnly: true,
-					// secure: true,
+					secure: true,
 					sameSite: 'none',
-					// domain: '.surge.sh'
+					domain: '.surge.sh'
 				});
 				req.body.schoolCookie = decodedData
 				req.headers.schoolCookie = decodedData
