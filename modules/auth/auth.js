@@ -18,7 +18,7 @@ auth.post("/login", async (req, res) => {
                 } else {
                     const isBlocked = userExist.blocked
                     if (isBlocked) {
-                        res.status(403).send({ error: "You Are Blocked.." })
+                        res.status(403).send({ error: "You Are Blocked, please contact with admin.." })
                     } else {
                         var token =
                             jwt.sign({

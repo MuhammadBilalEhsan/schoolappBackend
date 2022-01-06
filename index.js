@@ -3,6 +3,8 @@ const cors = require("cors")
 const app = express();
 const jwt = require("jsonwebtoken")
 const cookieParser = require('cookie-parser')
+// const path = require('path')
+
 
 const auth = require("./modules/auth/auth")
 const db = require("./database/conn");
@@ -19,12 +21,15 @@ app.use(cors({
 	// origin: "https://school1.surge.sh",
 	origin: ["http://localhost:3000", "https://school1.surge.sh", "https://warm-hollows-02372.herokuapp.com"],
 	// origin: ["http://localhost:3000", "https://school1.surge.sh"],
+	"Access-Control-Allow-Origin": "*",
 	credentials: true,
 }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+// app.use("*", express.static(path.resolve(path.join(__dirname, "./build"))));
 app.use(express.static(__dirname + "./public/"));
 
 app.use("/", auth)
@@ -40,7 +45,7 @@ app.use((req, res, next) => {
 			const issueDate = decodedData.iat * 1000;
 			const nowDate = new Date().getTime();
 			const diff = nowDate - issueDate;
-			if (diff > 1800000) {
+			if (diff > 900000) {
 				res.status(401).send({ error: "token expired" })
 			} else {
 				const MAX_AGE_OF_TOKEN = 86400000
