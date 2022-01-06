@@ -32,7 +32,8 @@ auth.post("/login", async (req, res) => {
 
                         res.cookie('schoolCookie', token, {
                             maxAge: 8640000000000,
-                            httpOnly: true
+                            httpOnly: true,
+                            secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
                         });
 
                         res.send({ user: userExist, message: "User Login successfully" });
