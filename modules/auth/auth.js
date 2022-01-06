@@ -31,9 +31,12 @@ auth.post("/login", async (req, res) => {
                             }, process.env.SECRET_KEY)
 
                         res.cookie('schoolCookie', token, {
+                            // maxAge: 3600000*5,
                             maxAge: 8640000000000,
                             httpOnly: true,
-                            secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+                            secure: true,
+                            sameSite: 'none',
+                            domain: '.surge.sh'
                         });
 
                         res.send({ user: userExist, message: "User Login successfully" });

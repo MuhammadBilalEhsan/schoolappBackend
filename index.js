@@ -56,7 +56,10 @@ app.use((req, res, next) => {
 				}, process.env.SECRET_KEY)
 				res.cookie('schoolCookie', token, {
 					maxAge: MAX_AGE_OF_TOKEN,
-					httpOnly: true
+					httpOnly: true,
+					secure: true,
+					sameSite: 'none',
+					domain: '.surge.sh'
 				});
 				req.body.schoolCookie = decodedData
 				req.headers.schoolCookie = decodedData
