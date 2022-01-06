@@ -56,7 +56,7 @@ module.exports.registerUser = async (req, res) => {
 };
 module.exports.getCurrentUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.body.schoolCookie.id)
+		const user = await User.findById(req.params.id)
 		if (user) {
 			res.send({ message: "user object sent..", user })
 		} else {
@@ -68,10 +68,9 @@ module.exports.getCurrentUser = async (req, res) => {
 }
 module.exports.EditProfile = async (req, res) => {
 	try {
-		let { fname, lname, fatherName, age, phone } = req.body;
-		const id = req.body.schoolCookie.id
+		let { id, fname, lname, fatherName, age, phone } = req.body;
 
-		if (!fname || !lname || !fatherName || !age || !phone) {
+		if (!fname || !lname || !fatherName || !age || !phone || !id) {
 			return res.status(422).json({ error: "please fill all fields properly" });
 		} else {
 			const userUpdate = await User.findByIdAndUpdate(id, {
@@ -132,9 +131,8 @@ module.exports.EditProfileImage = async (req, res) => {
 
 module.exports.markAttendance = async (req, res) => {
 	try {
-		const { year, month, date, time } = req.body;
-		let _id = req.body.schoolCookie.id
-		if (!year || !month || !date || !time) {
+		const { _id, year, month, date, time } = req.body;
+		if (!year || !month || !date || !time || !_id) {
 			return res.status(400).send({ error: "Invalid Request" });
 		} else {
 			const findUser = await User.findOne({ _id });
@@ -356,11 +354,8 @@ module.exports.blockUserController = async (req, res) => {
 }
 module.exports.addClass = async (req, res) => {
 	try {
-		const { title } = req.body
-		const adminID = req.body.schoolCookie.id
-		// console.log("adminID", adminID)
-		// console.log("title", title)
-		if (!title) {
+		const { title, adminID } = req.body
+		if (!title || !adminID) {
 			res.status(400).send({ error: "Invalid Request.." })
 		} else {
 			const findAdmin = await User.findById(adminID)
@@ -404,21 +399,25 @@ module.exports.addClass = async (req, res) => {
 
 module.exports.changePassword = async (req, res) => {
 	try {
-		const id = req.body.schoolCookie.id
-		const { oldPassword, newPassword, confirmPassword } = req.body
-		const user = await User.findById(id)
-		const isMatch = await bcrypt.compare(oldPassword, user.password)
-		if (!isMatch) {
-			res.status(400).send({ error: "Incorrect Old Password." })
-		} else {
-			if (newPassword !== confirmPassword) {
-				res.status(400).send({ error: "Passwords not matching." })
+		const { id, oldPassword, newPassword, confirmPassword } = req.body
+		if (!id || !oldPassword || !newPassword || !confirmPassword) {
+			res.status(400).send({ error: "Invalid Request.." })
+		}
+		else {
+			const user = await User.findById(id)
+			const isMatch = await bcrypt.compare(oldPassword, user.password)
+			if (!isMatch) {
+				res.status(400).send({ error: "Incorrect Old Password." })
 			} else {
-				const password = await bcrypt.hash(newPassword, 12);
-				if (password) {
-					const changePassword = await User.findByIdAndUpdate(id, { password: password })
-					if (changePassword) {
-						res.send({ message: "Password Changed Successfully.." })
+				if (newPassword !== confirmPassword) {
+					res.status(400).send({ error: "Passwords not matching." })
+				} else {
+					const password = await bcrypt.hash(newPassword, 12);
+					if (password) {
+						const changePassword = await User.findByIdAndUpdate(id, { password: password })
+						if (changePassword) {
+							res.send({ message: "Password Changed Successfully.." })
+						}
 					}
 				}
 			}
@@ -429,7 +428,7 @@ module.exports.changePassword = async (req, res) => {
 }
 
 
-module.exports.logOutController = (req, res) => {
-	res.clearCookie('schoolCookie')
-	res.send({ message: "User logout" })
-}
+// module.exports.logOutController = (req, res) => {
+// 	res.clearCookie('schoolCookie')
+// 	res.send({ message: "User logout" })
+// }

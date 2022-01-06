@@ -28,18 +28,9 @@ auth.post("/login", async (req, res) => {
                                 email: userExist.email,
                                 roll: userExist.roll,
                                 atClass: userExist.atClass,
-                            }, process.env.SECRET_KEY)
-
-                        res.cookie('schoolCookie', JSON.stringify(token), {
-                            // maxAge: 3600000*5,
-                            maxAge: 8640000000000,
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: 'none',
-                            domain: '.surge.sh'
-                        });
-
-                        res.send({ user: userExist, message: "User Login successfully" });
+                            }, process.env.SECRET_KEY, { expiresIn: '24h' })
+                        
+                        res.send({ user: userExist, token, message: "User Login successfully" });
                     }
                 }
             } else {

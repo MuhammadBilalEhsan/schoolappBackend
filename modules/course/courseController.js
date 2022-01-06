@@ -17,18 +17,22 @@ module.exports.getMyCourse = async (req, res) => {
 module.exports.addCourse = async (req, res) => {
 	try {
 		const {
+			teacher_id,
+			teacherName,
+			teacherClass,
 			courseName,
 			courseDesc,
 			topics,
 			duration,
 			courseOutline,
 		} = req.body;
-		const { id: teacher_id, fname, lname, atClass: teacherClass } = req.body.schoolCookie
-		const teacherName = `${fname} ${lname}`
 
 		const dateOfCreation = new Date().toString();
 
 		if (
+			!teacher_id ||
+			!teacherName ||
+			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
 			!topics ||
@@ -71,15 +75,19 @@ module.exports.addCourse = async (req, res) => {
 module.exports.editCourse = async (req, res) => {
 	try {
 		const {
+			teacher_id,
+			teacherName,
+			teacherClass,
 			courseName,
 			courseDesc,
 			topics,
 			duration,
 			courseOutline,
 		} = req.body;
-		const { id: teacher_id, fname, lname, atClass: teacherClass } = req.body.schoolCookie
-		const teacherName = `${fname} ${lname}`
 		if (
+			!teacher_id ||
+			!teacherName ||
+			!teacherClass ||
 			!courseName ||
 			!courseDesc ||
 			!topics ||
@@ -111,25 +119,28 @@ module.exports.editCourse = async (req, res) => {
 };
 module.exports.coursesForStudents = async (req, res) => {
 	try {
-		const { id, atClass } = req.body.schoolCookie
-		const allAvailales = await Course.find({ teacherClass: atClass })
+		const { id, atClass } = req.body
+		if (!id || !atClass) {
+			res.status(404).send({ error: "Invalid Request.." })
+		} else {
+			const allAvailales = await Course.find({ teacherClass: atClass })
 
-		const filtered = allAvailales.filter(currentCourse => {
-			if (currentCourse.students.length) {
-				const abc = currentCourse.students.find((student) => student.id === id)
-				if (!abc) {
+			const filtered = allAvailales.filter(currentCourse => {
+				if (currentCourse.students.length) {
+					const abc = currentCourse.students.find((student) => student.id === id)
+					if (!abc) {
+						return currentCourse
+					}
+				} else {
 					return currentCourse
 				}
+			})
+			if (!filtered) {
+				res.status(200).send({ message: `No Courses Available for class $ { atClass }` })
 			} else {
-				return currentCourse
+				res.status(200).send({ courses: filtered, message: `These Courses are Available for class $ { atClass }` })
 			}
-		})
-		if (!filtered) {
-			res.status(200).send({ message: `No Courses Available for class $ { atClass }` })
-		} else {
-			res.status(200).send({ courses: filtered, message: `These Courses are Available for class $ { atClass }` })
 		}
-
 	} catch (error) {
 		res.status(500).send({ error: "Internal Server Error.." })
 	}

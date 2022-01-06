@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors")
 const app = express();
 const jwt = require("jsonwebtoken")
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser')
 // const path = require('path')
 
 
@@ -10,7 +10,7 @@ const auth = require("./modules/auth/auth")
 const db = require("./database/conn");
 const user = require("./modules/user/userRoutes");
 const bodyParser = require("body-parser");
-app.use(cookieParser());
+// app.use(cookieParser());
 
 const course = require("./modules/course/courseRoutes");
 const assignment = require("./modules/assignment/assignmentRoutes");
@@ -31,44 +31,21 @@ app.use(express.static(__dirname + "./public/"));
 
 app.use("/", auth)
 
-
 app.use((req, res, next) => {
-	if (!req.cookies.schoolCookie) {
-		res.status(401).send({ error: "include http-only credentials with every request" })
-		return;
-	}
-	jwt.verify(req.cookies.schoolCookie, process.env.SECRET_KEY, function (err, decodedData) {
-		if (!err) {
-			const issueDate = decodedData.iat * 1000;
-			const nowDate = new Date().getTime();
-			const diff = nowDate - issueDate;
-			if (diff > 900000) {
-				res.status(401).send({ error: "token expired" })
-			} else {
-				const MAX_AGE_OF_TOKEN = 86400000
-				var token = jwt.sign({
-					id: decodedData.id,
-					fname: decodedData.lname,
-					lname: decodedData.lname,
-					email: decodedData.email,
-					roll: decodedData.roll,
-					atClass: decodedData.atClass,
-				}, process.env.SECRET_KEY)
-				res.cookie('schoolCookie', JSON.stringify(token), {
-					maxAge: MAX_AGE_OF_TOKEN,
-					httpOnly: true,
-					secure: true,
-					sameSite: 'none',
-					domain: '.surge.sh'
-				});
-				req.body.schoolCookie = decodedData
-				req.headers.schoolCookie = decodedData
-				next();
+	if (req.headers.authentication) {
+		jwt.verify(req.headers.authentication.split(' ')[1], process.env.SECRET_KEY, function (err, decoded) {
+			if (!err) {
+				console.log("decoded", decoded)
+				next()
 			}
-		} else {
-			res.status(401).send({ error: "invalid token" })
-		}
-	});
+			else {
+				res.status(401).send({ error: "Unautherize.." })
+			}
+		});
+
+	} else {
+		res.status(400).send({ error: "Unautherize Bad request.." })
+	}
 })
 
 
