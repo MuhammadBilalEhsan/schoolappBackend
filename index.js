@@ -18,7 +18,8 @@ require("dotenv").config();
 const port = process.env.PORT || 4040;
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://school1.surge.sh"],
+    origin: "*",
+    // origin: ["http://localhost:3000", "https://school1.surge.sh"],
     credentials: true,
   })
 );
@@ -38,6 +39,14 @@ app.use((req, res, next) => {
       process.env.SECRET_KEY,
       function (err, decoded) {
         if (!err) {
+          // res.header("Access-Control-Allow-Origin", [
+          //   "http://localhost:3000",
+          //   "https://school1.surge.sh",
+          // ]);
+          // res.header(
+          //   "Access-Control-Allow-Headers",
+          //   "Origin, X-Requested-With, Content-Type, Accept"
+          // );
           next();
         } else {
           res.status(401).send({ error: "Unautherize.." });
